@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<StartupServicesManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="LaneData_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="LaneData_PartitionCount" DefaultValue="4" />
+    <Parameter Name="LaneData_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PlaneController_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PlaneController_PartitionCount" DefaultValue="1" />
+    <Parameter Name="PlaneController_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="API_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="AirportLanes_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="AirportLanes_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PlaneActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PlaneActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PlaneActorService_PartitionCount" DefaultValue="10" />
+  </Parameters>
+  <Services>
+    <!-- The section below creates instances of service types, when an instance of this 
+         application type is created. You can also create one or more instances of service type using the 
+         ServiceFabric PowerShell module.
+
+         The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
+    <Service Name="LaneData" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="LaneDataType" TargetReplicaSetSize="[LaneData_TargetReplicaSetSize]" MinReplicaSetSize="[LaneData_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[LaneData_PartitionCount]" LowKey="0" HighKey="3" />
+      </StatefulService>
+    </Service>
+    <Service Name="AirportLanes" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="AirportLanesType" TargetReplicaSetSize="[AirportLanes_TargetReplicaSetSize]" MinReplicaSetSize="[AirportLanes_MinReplicaSetSize]">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
+    <Service Name="PlaneController" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="PlaneControllerType" TargetReplicaSetSize="[PlaneController_TargetReplicaSetSize]" MinReplicaSetSize="[PlaneController_MinReplicaSetSize]">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
+    <Service Name="API" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="APIType" InstanceCount="[API_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="PlaneActorService" GeneratedIdRef="a342e0a3-f21e-4d2f-af7a-8de1e29fcddb|Persisted">
+      <StatefulService ServiceTypeName="PlaneActorServiceType" TargetReplicaSetSize="[PlaneActorService_TargetReplicaSetSize]" MinReplicaSetSize="[PlaneActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[PlaneActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="TowerService" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="TowerServiceType" InstanceCount="[API_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+  </Services>
+</StartupServicesManifest>
